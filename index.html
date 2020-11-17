@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Weather App</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+
+<body>
+<div id="app">
+    <h2 v-if="packFor != 'No'">
+        {{packFor}}
+    </h2>
+    <h3 v-if="umbrella != 'No'">
+        {{umbrella}}
+    </h3>
+    Enter City: <input v-model="location"> Enter Country: <input v-model="country"><button v-on:click="GetWeather">Go</button><br>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>City</th>
+            <th>Description</th>
+            <th>Temperature (celsius)</th>
+            <th>Wind Speed (m/s)</th>
+            <th>Rainfall (3h)</th>
+            <th>Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="row in forecast">
+            <td v-for="item in row">
+                {{item}}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            location: "Dublin",
+            country: "IE",
+            result: "",
+            forecast: [],
+            umbrella: "No",
+            cityNotFound: false
+        },
+        methods: {
+            GetWeather: getWeather
+        }
+    })
+
+    function getWeather() {
+        let prom = fetch("weather/" + this.location + ((this.country == "") ? "" : ",") + this.country)
+        prom.then(response => response.json())
+            .then(response => {
+                this.forecast = response.summary
+                this.umbrella = response.umbrella
+                this.packFor = response.packFor
+            })
+    }
+</script>
+</body>
+
+</html>
